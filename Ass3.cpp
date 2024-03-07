@@ -69,7 +69,7 @@ void TBT::searchTodelete(int x)
     Node* child=T;
     while(1)
     {
-        parent=T;
+        parent=child;
         if(T->data>x)
         {
             if(T->lbit==1)
@@ -99,8 +99,9 @@ void TBT::searchTodelete(int x)
         
     }
 
-    cout<<parent->data
+    cout<<parent->data;
 }
+
 void TBT::deleteNode(Node* parent,Node* child) 
 {
 
@@ -336,6 +337,8 @@ int main()
     cout << "\ninorder:";
     t.inorder();
     cout<<endl;
-    t.preorder();
+    //t.preorder();
+    cout<<"serach:";
+    t.searchTodelete(9);
     return 0;
 }

@@ -1,37 +1,78 @@
 #include<iostream>
+#include<string.h>
 using namespace std;
-#define Max 10
+#define Max 1
+class client
+{
+    public:
 
+    char name[100];
+    long long int telephone;
+
+    client()
+    {
+        strcpy(name,"");
+        
+    }
+
+    void print()
+    {
+        cout<<name<<"\t"<<telephone;
+    }
+
+    void scan()
+    {
+        cout<<"\nEnter name:";
+        cin>>name;
+
+        cout<<"\nEnter telephone:";
+        cin>>telephone;
+    }
+
+    int operator !=(client x)
+    {
+        if(strcmp(name,x.name)==0 && telephone==x.telephone)
+        {
+            return 0;
+        }
+        return 1;
+    }
+};
 class Hashtable
 {
-    long long int LWR[Max];
-    long long int LWTR[Max];
-
+    client arr[Max];
     public:
     Hashtable()
     {
         for(int i=0;i<Max;i++)
         {
-            LWR[i]=-1;
-            LWTR[i]=-1;
+            arr[i].telephone=-1;
+          
         }
     }
 
-    void insert_LWTR(long long int x)
+    void insert_LWTR(client x)
     {
-        int pos=x%10;
-        if(LWTR[pos]==-1)
+        int pos=x.telephone%Max;
+        if(arr[pos].telephone==-1)
         {
-            LWTR[pos]=x;
+            arr[pos]=x;
             return;
         }
         else
         {
-            while(LWTR[pos]!=-1)
+            int c=0;
+            while(arr[pos].telephone!=-1)
             {
                 pos=(pos+1)%Max;
+                c++;
+                if(c==Max)
+                {
+                    cout<<"\nTable full";
+                    return;
+                }
             }
-            LWTR[pos]=x;
+            arr[pos]=x;
         }
 
     }
@@ -41,39 +82,47 @@ class Hashtable
         cout<<"\nHash table witout repalcement:\n";
         for(int i=0;i<Max;i++)
         {
-            cout<<i<<" | "<<LWTR[i];
-            cout<<endl<<"-----"<<endl;
+            cout<<i<<"\t";
+            arr[i].print();
+            cout<<endl<<"---------------------"<<endl;
         }
     }
 
-    void insert_LWR(long long int x)
+    void insert_LWR(client x)
     {
-        int pos=x%10;
-        if(LWR[pos]==-1)
+        int pos=x.telephone%10;
+        if(arr[pos].telephone==-1)
         {
-            LWR[pos]=x;
+            arr[pos]=x;
             return;
         }
         else
         {
-            int syn=LWR[pos];
-            int temp;
-            if(syn%Max==x%Max)
+            client syn=arr[pos];
+            client temp;
+            if(syn.telephone%Max==x.telephone%Max)
             {
                 temp=x;
             }
             else
             {
                 temp=syn;
-                LWR[pos]=x;
+                arr[pos]=x;
             }
-
-            while(LWR[pos]!=-1)
+            int c=0;
+            while(arr[pos].telephone!=-1)
             {
                 pos=(pos+1)%Max;
+                c++;
+                if(c==Max)
+                {
+                    cout<<"\nTable full";
+                     arr[pos]=temp;
+                    return;
+                }
             }
 
-            LWR[pos]=temp;
+            arr[pos]=temp;
         }
     }
 
@@ -82,37 +131,46 @@ class Hashtable
          cout<<"\nHash table with repalcement:\n";
         for(int i=0;i<Max;i++)
         {
-            cout<<i<<" | "<<LWR[i];
-            cout<<endl<<"-----"<<endl;
+            cout<<i<<"\t";
+            arr[i].print();
+            cout<<endl<<"------------------------"<<endl;
         }
     }
 
-    int count_LWR(long long int x)
+    int count_LWR(client x)
     {
-        int pos=x%10;
+        int pos=x.telephone%Max;
         int c=0;
-        while(LWR[pos]!=-1 && LWR[pos]!=x)
+        while(arr[pos].telephone!=-1 && arr[pos]!=x)
         {
             c++;
             pos=(pos+1)%Max;
+              if(c==Max)
+            {
+                return 0;
+            }
         }
-        if(LWR[pos]==-1)
+        if(arr[pos].telephone==-1)
         {
             return 0;
         }
         return c;   
     }
 
-    int count_LWTR(long long int x)
+    int count_LWTR(client x)
     {
-        int pos=x%10;
+        int pos=x.telephone%Max;
         int c=0;
-        while(LWTR[pos]!=-1 && LWTR[pos]!=x)
+        while(arr[pos].telephone!=-1 && arr[pos]!=x)
         {
             c++;
             pos=(pos+1)%Max;
+            if(c==Max)
+            {
+                return 0;
+            }
         }
-        if(LWTR[pos]==-1)
+        if(arr[pos].telephone==-1)
         {
             return 0;
         }
@@ -124,7 +182,8 @@ class Hashtable
 
 int main()
 {
-    Hashtable h;
+    Hashtable hWR;
+    Hashtable hWTR;
     // while(1)
     // {
     //     cout<<"\nEnter telephone no:(-1 to stop):";
@@ -141,28 +200,31 @@ int main()
 
     // h.show_LWTR();
 
-
+    client c;
+    char ch;
      while(1)
     {
-        cout<<"\nEnter telephone no:(-1 to stop):";
-        int telephone_no;
-        cin>>telephone_no;
-
-        if(telephone_no==-1)
+        cout<<"\nDO you want add the client:(y\\n):";
+        cin>>ch;
+        if(ch=='n')
         {
             break;
         }
-        h.insert_LWR(telephone_no);
-        h.insert_LWTR(telephone_no);
+        cout<<"\nEnter client to telephone book:";
+        c.scan();
+        
+       
+        hWR.insert_LWR(c);
+        hWTR.insert_LWTR(c);
     }
 
-    h.show_LWR();
+    hWR.show_LWR();
     cout<<endl<<endl;
-    h.show_LWTR();
+    hWTR.show_LWTR();
 
-    int x;
+    client x;
     cout<<"\nEnter telephone no to search:";
-    cin>>x;
-    cout<<h.count_LWR(x)<<"    "<<h.count_LWTR(x)<<endl;
+    x.scan();
+    cout<<hWR.count_LWR(x)<<"    "<<hWTR.count_LWTR(x)<<endl;
     return 0;
 }
