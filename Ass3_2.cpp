@@ -1,177 +1,181 @@
 #include <iostream>
+#include <string.h>
+#include <cctype>
 using namespace std;
 
-class Node {
-    int data;
-    int lbit;
-    int rbit;
-    Node* rlink;
-    Node* llink;
-
-public:
-    Node() {
-        data = 0;
-        lbit = 0;
-        rbit = 0;
-        rlink = NULL;
-        llink = NULL;
-    }
-
-    Node(int d) {
-        data = d;
-        lbit = 0;
-        rbit = 0;
-        rlink = NULL;
-        llink = NULL;
-    }
-
-    friend class TBT;
+class HashNode
+{
+    string word;
+    string mean;
+    HashNode *next;
+    public:
+        HashNode()
+        {
+            word="";
+            mean="";
+            next=NULL;
+        }
+        HashNode(string wd,string mn)
+        {
+            word=wd;
+            mean=mn;
+            next=NULL;
+        }
+        friend class HashTable;
 };
 
-class TBT {
-    Node* head;
+class HashTable
+{
+    HashNode *arr[26];
+    public:
+        HashTable()
+        {
+            for(int i=0;i<26;i++)
+            {
+                arr[i]=NULL;
+            }
+        }
+        int hashFunc(string word)
+        {
+            return (int (toupper(word[0]))-int('A'));
+        }
+        
+        void insertInDic(string wrd,string mn)
+        {
+            HashNode *p;
+            HashNode *newNode = new HashNode(wrd,mn);
+            int ind=hashFunc(wrd);
+            if(arr[ind]==NULL)
+            {
+                arr[ind]=newNode;
+            }
+            else{
+                HashNode *temp=arr[ind];
+                while(temp->next!=NULL)
+                {
+                    temp=temp->next;
+                }
+                temp->next=newNode;
+            }
+        }
 
-public:
-    TBT() {
-        head = new Node(0);
-        head->rlink = head;
-        head->rbit = 1;
-        head->llink = head;
-    }
+        void searchInDic(string wrd)
+        {
+            int ind=hashFunc(wrd);
+            HashNode *temp=arr[ind];
+            while(temp!=NULL && temp->word != wrd)
 
-    void create();
-    void insert(int x);
-    void Linsert(Node*, Node*);
-    void Rinsert(Node*, Node*);
-    void inorder();
-    Node* inorder_succ(Node*);
+            {
+                temp=temp->next;
+            }
+            if(temp==NULL)
+            {
+                cout<<"\n"<<wrd<<" not present in dictionary"<<endl;
+                return;
+            }
+            cout<<"\nMeaning of word "<<wrd<<" is "<<temp->mean<<endl;
+        }
 
-    ~TBT() {
-        destroy_tree(head->llink); // Deallocate memory for all nodes
-        delete head;
-    }
+        void deleteInDic(string wrd)
+        {
+            int ind = hashFunc(wrd);
+            HashNode *p=arr[ind];
+            HashNode *temp=NULL;
+            while(p->word!=wrd && p!=NULL)
+            {
+                temp=p;
+                p=p->next;
+            }
+            if(p==NULL)
+            {
+                cout<<wrd<<" not present in dictionary. Can't delete"<<endl;
+                return;
+            }
+            if(p->next==NULL)
+            {
+                arr[ind]=NULL;
+                delete p;
+                return;
+            }
+            temp->next=p->next;
+            delete p;
+            
+        }
 
-private:
-    void destroy_tree(Node* node);
+        void display()
+        {
+            for(int i=0;i<26;i++)
+            {
+                cout<<char('A'+i)<<" : ";
+                if(arr[i]!=NULL)
+                {
+                    HashNode *temp=arr[i];
+                    while(temp!=NULL)
+                    {
+                        cout<<temp->word<<" | "<<temp->mean<<"  ->  ";
+                        temp=temp->next;
+                    }
+                    cout<<" --- | --- ";
+                    cout<<endl;
+                }
+                else
+                {
+                    cout<<" --- | --- "<<endl;
+                }
+            }
+        }
 };
 
-void TBT::Linsert(Node* parent, Node* child) {
-    child->lbit = parent->lbit;
-    child->llink = parent->llink;
-    child->rlink = parent;
-    parent->lbit = 1;
-    parent->llink = child;
-}
-
-void TBT::Rinsert(Node* parent, Node* child) {
-    child->rbit = parent->rbit;
-    child->rlink = parent->rlink;
-    child->llink = parent;
-    parent->rbit = 1;
-    parent->rlink = child;
-}
-
-void TBT::create() {
-    while (true) {
-        int x;
-        cout << "\nEnter data (-1 to stop): ";
-        cin >> x;
-
-        if (cin.fail()) {
-            cout << "Invalid input. Please enter an integer." << endl;
-            cin.clear(); // Clear error flags
-          //  cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
-            continue;
-        }
-
-        if (x == -1) {
-            return;
-        }
-        insert(x);
-    }
-}
-
-void TBT::insert(int x) {
-    Node* p = new Node(x);
-
-    if (head->lbit == 0) {
-        Linsert(head, p);
-        return;
-    }
-
-    Node* t = head->llink;
-    Node* parent = head->llink;
-
-    while (true) {
-        parent = t;
-
-        if (t->data > x) {
-            if (t->lbit == 1) {
-                t = t->llink;
-            } else {
+int main()
+{
+    HashTable ht;
+    int op;
+    char ch;
+    string wrd;
+    string mn;
+    do
+    {
+        cout<<"\n****OPTIONS***\n\n1.Insert\n2.Search\n3.Delete\n4.Display"<<endl;
+        cout<<"\nEnter operation no to perform: ";
+        cin>>op;
+        switch(op)
+        {
+            case 1:
+                cout<<"\n\n---INSERT---"<<endl;
+                cout<<"\nEnter wrd: ";
+                cin.ignore(1);
+                getline(cin,wrd);
+                cout<<"\nEnter it's meaning: ";
+                getline(cin,mn);
+                ht.insertInDic(wrd,mn);
                 break;
-            }
-        } else if (t->data < x) {
-            if (t->rbit == 1) {
-                t = t->rlink;
-            } else {
+            case 2:
+                cout << "\n\n---SEARCH---" << endl;
+                cout<<"\nEnter wrd to search: ";
+                cin.ignore(1);
+                getline(cin,wrd);
+                ht.searchInDic(wrd);
                 break;
-            }
-        } else {
-            cout << "\nDuplicate";
-            delete p; // Deallocate memory for the duplicate node
-            return;
+            case 3:
+                cout << "\n\n---DELETE---" << endl;
+                cout<<"\nEnter wrd to delete: ";
+                cin.ignore(1);
+                getline(cin,wrd);
+                ht.deleteInDic(wrd);
+                break;
+            case 4:
+                cout << "\n\n---DISPLAY---" << endl;
+                ht.display();
+                break;
+            default:
+                cout<<"\nEnter valid choice"<<endl;
+                break;
         }
-    }
+        cout<<"\n\nWant to continue?(y/n) ";
+        cin>>ch;
+    }while(ch=='y');
 
-    if (parent->data < x) {
-        Rinsert(parent, p);
-    } else if (parent->data > x) {
-        Linsert(parent, p);
-    }
-}
+    cout<<"\n\n**** THANK YOU! ****"<<endl;
 
-Node* TBT::inorder_succ(Node* t) {
-    if (t->rbit == 0) {
-        return t->rlink;
-    }
-
-    t = t->rlink;
-    while (t->lbit == 1) {
-        t = t->llink;
-    }
-
-    return t;
-}
-
-void TBT::inorder() {
-    Node* t = head->llink;
-    if (head == t) {
-        cout << "\nEmpty";
-        return;
-    }
-    while (t->lbit == 1) {
-        t = t->llink;
-    }
-
-    while (t != head) {
-        cout << t->data << " ";
-        t = inorder_succ(t);
-    }
-}
-
-void TBT::destroy_tree(Node* node) {
-    if (node != NULL) {
-        destroy_tree(node->llink);
-        destroy_tree(node->rlink);
-        delete node;
-    }
-}
-
-int main() {
-    TBT t;
-    t.create();
-    cout << "\nInorder: ";
-    t.inorder();
     return 0;
 }

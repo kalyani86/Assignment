@@ -5,18 +5,21 @@ using namespace std;
 class Node
 {
     string str;
+    string mean;
     Node* next;
 
     public:
     Node()
     {
         str="";
+        mean="";
         next=NULL;
     }
 
-    Node(string s)
+    Node(string s,string mn)
     {
         str=s;
+        mean=mn;
         next=NULL;
     }
     friend class Dictonary;
@@ -34,10 +37,10 @@ class Dictonary
         }
     }
 
-    void insert(char key,string str)
+    void insert(string str,string mean)
     {
-        int pos=int(key-'a');
-        Node* p=new Node(str);
+        int pos=int(str[0]-'a');
+        Node* p=new Node(str,mean);
 
         if(dict[pos]==NULL)
         {
@@ -63,7 +66,7 @@ class Dictonary
             cout<<char(i+'a')<<"-->";
             while(p!=0)
             {
-                cout<<p->str<<"-->";
+                cout<<" | "<<p->str<<" - "<<p->mean<<" | "<<"-->";
                 p=p->next;
             }
             cout<<endl;
@@ -71,28 +74,46 @@ class Dictonary
         }
     }
 
-    void find(char key,string s)
+    void find(string s)
     {   
-        
-    }   
+        int pos=int(s[0]='a');
+        if(dict[pos]==NULL)
+        {
+            return;
+        }
+
+        Node* p=dict[pos];
+        while(p!=0)
+        {
+            if(p->str==s)
+            {
+                cout<<"\nfound";
+                return;
+            }
+            p=p->next;
+        }
+    }
+    
+       
 };
 int main()
 {
     Dictonary d;
    while(1)
    {
-        char key;
-        string str;
 
-        cout<<"\nenter key value:";
-        cin>>key;
+        string str;
+        string mean;
+      
         cout<<"\nenter string :";
         cin>>str;
         if(str=="stop")
         {
             break;
-        }
-        d.insert(key,str);
+        }cout<<"\nenter meaning:";
+        cin>>mean;
+
+        d.insert(str,mean);
    }
    d.display();
     

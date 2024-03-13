@@ -223,7 +223,7 @@ void TBT::searchTodelete(int x)
       
         if(child->data<x)
         {
-             parent=child;
+             parent=child;       //---->>>> it should be here
             if(child->rbit==1)
             {
                 child=child->rlink;
@@ -234,7 +234,7 @@ void TBT::searchTodelete(int x)
         }
         else if(child->data>x)
         {
-             parent=child;
+             parent=child;      //---->>>> it should be here
             if(child->lbit==1)
             {
                 child=child->llink;
@@ -291,7 +291,7 @@ void TBT::Deletion(Node* parent,Node* child)
         if(child->lbit==0 && child->rbit==0)
         {
             p=child;
-            cout<<"\nparent->data"<<parent->data<<"\tchild->data:"<<child->data;
+           // cout<<"\nparent->data"<<parent->data<<"\tchild->data:"<<child->data;
             if(parent->llink==child)
             {
                 parent->lbit=child->lbit;
