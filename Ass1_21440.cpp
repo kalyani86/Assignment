@@ -7,6 +7,7 @@
 //============================================================================
 
 #include <iostream>
+#include<stack>
 using namespace std;
 
 class TNode
@@ -50,6 +51,9 @@ class BinaryTree
 	void inorder(TNode* p);
 	void preorder(TNode* p);
 	void postorder(TNode* p);
+	void nonRecursive_inorder();
+	void nonRecursive_preorder();
+	void nonRecursive_postorder();
 
 	TNode* swap(TNode* p);
 	int height(TNode*);
@@ -65,6 +69,99 @@ class BinaryTree
 
 };
 
+void BinaryTree::nonRecursive_postorder()
+{
+	TNode* temp=new TNode(-1);
+	stack<TNode*>s;
+	TNode* t=root;
+	while(1)
+	{
+		while(t!=0)
+		{
+			s.push(t);
+			if(t->rlink!=0)
+			{
+				s.push(t->rlink);
+				s.push(temp);
+			}
+			t=t->llink;
+		}
+
+		if(s.empty())
+		{
+			return;
+		}
+
+		t=s.top();
+		s.pop();
+
+		while(t!=temp && !s.empty())
+		{
+			cout<<t->data<<" ";
+			t=s.top();
+			s.pop();
+		}
+
+		if(!s.empty())
+		{
+			t=s.top();
+			s.pop();
+		}
+		else{
+			cout<<t->data<<" ";
+			break;
+		}
+	}
+}
+void BinaryTree::nonRecursive_preorder()
+{
+	TNode* t=root;
+	stack<TNode*>s;
+	while(t!=0)
+	{
+		cout<<t->data<<" ";
+		s.push(t);
+		t=t->llink;
+	}
+
+	while(!s.empty())
+	{
+		t=s.top();
+		s.pop();
+		t=t->rlink;
+		while(t!=0)
+		{
+			cout<<t->data<<" ";
+			s.push(t);
+			t=t->llink;
+		}
+	}
+}
+void BinaryTree::nonRecursive_inorder()
+{
+	stack<TNode*>s;
+	TNode* t=root;
+	while(t!=0)
+	{
+		s.push(t);
+		t=t->llink;
+	}
+
+
+	while(!s.empty())
+	{
+		t=s.top();
+		s.pop();
+		cout<<t->data<<" ";
+
+		t=t->rlink;
+		while(t!=0)
+		{
+			s.push(t);
+			t=t->llink;
+		}
+	}
+}
 void BinaryTree::makeempty()
 {
 	root=eraseNode(root);
@@ -95,11 +192,11 @@ int BinaryTree::count_internal_nodes(TNode* p)
 		return 0;
 	}
 	else{
-		count_internal_nodes(p->llink);
-		count_internal_nodes(p->rlink);
+		int res1=count_internal_nodes(p->llink);
+		int res2=count_internal_nodes(p->rlink);
 		if(p->llink!=0 || p->rlink!=0)
 		{
-			return 1;
+			return 1+res1+res2;
 		}
 		return 0;
 	}
@@ -214,8 +311,8 @@ void BinaryTree::preorder(TNode* p)
 	}
 
 	cout<<"\ndata:"<<p->data;
-	inorder(p->llink);
-	inorder(p->rlink);
+	preorder(p->llink);
+	preorder(p->rlink);
 }
 
 
@@ -227,8 +324,8 @@ void BinaryTree::postorder(TNode* p)
 		return;
 	}
 
-	inorder(p->llink);
-	inorder(p->rlink);
+	postorder(p->llink);
+	postorder(p->rlink);
 	cout<<"\ndata:"<<p->data;
 }
 void BinaryTree::create()
@@ -263,14 +360,24 @@ int main() {
 
 	BinaryTree b;
 	b.create();
-	cout<<"\nInorder:";
-	b.inorder(b.getroot());
+	// cout<<"\nInorder:";
+	// b.inorder(b.getroot());
 
-//	cout<<"\npreorder:";
-//	b.preorder(b.getroot());
-//
-//	cout<<"\npostorder:";
-//	b.postorder(b.getroot());
+	// cout<<"\nnon recursive:";
+	// b.nonRecursive_inorder();
+
+
+// 	cout<<"\npreorder:";
+// 	b.preorder(b.getroot());
+
+// 	cout<<"\nnon recursive:";
+// 	b.nonRecursive_preorder();
+// //
+	cout<<"\npostorder:";
+	b.postorder(b.getroot());
+
+	cout<<"\nnon recursive:";
+	b.nonRecursive_postorder();
 
 //	b.getroot()=b.swap(b.getroot());
 //	b.inorder(b.getroot());
@@ -286,7 +393,7 @@ int main() {
 
 //	cout<<"\nleaves:"<<b.count_leaves(b.getroot());
 
-	//cout<<"\ninternal nodes:"<<b.count_internal_nodes(b.getroot());
+	cout<<"\ninternal nodes:"<<b.count_internal_nodes(b.getroot());
 
 	// b.makeempty();
 	// cout<<"\n\n";

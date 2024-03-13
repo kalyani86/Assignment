@@ -50,7 +50,8 @@ class TBT
     Node* inorder_succ(Node*);
     void preorder();
     Node* preorde_succ(Node*);
-    void Deletion();
+    void Deletion(Node*,Node*);
+    void searchTodelete(int);
     ~TBT()
     {
         delete head;
@@ -207,7 +208,7 @@ void TBT::preorder()
     }
 }
 
-void TBT::Deletion()
+void TBT::searchTodelete(int x)
 {
     Node* t=head->llink;
     if(t==head)
@@ -215,18 +216,113 @@ void TBT::Deletion()
         return;
     }
 
+    Node* parent=t;
+    Node* child=t;
     while(1)
     {
-        
+      
+        if(child->data<x)
+        {
+             parent=child;
+            if(child->rbit==1)
+            {
+                child=child->rlink;
+            }
+            else{
+                break;
+            }
+        }
+        else if(child->data>x)
+        {
+             parent=child;
+            if(child->lbit==1)
+            {
+                child=child->llink;
+            }
+            else{
+                break;
+            }
+        }
+        else 
+        {
+            Deletion(parent,child);
+            break;
+        }
+          
     }
+}
+void TBT::Deletion(Node* parent,Node* child)
+{
+    Node* t=head->llink;
+    if(t==head)
+    {
+        return;
+    }
+    Node* p=NULL;
+   while(1)
+   {
+        if(child->lbit==1 && child->rbit==1)
+        {
+           
+           p=child;
+           parent=child;
+           child=child->rlink;
+           while(child->lbit==1)
+           {
+                parent=child;
+                child=child->llink;
+           }
+           p->data=child->data;
+        }
+        if(child->lbit==1 && child->rbit==0)
+        {
+            p=child;
+            parent=child;
+            child=child->llink;
+            p->data=child->data;
+        }
+        if(child->lbit==0 && child->rbit==1)
+        {
+            p=child;
+            parent=child;
+            child=child->rlink;
+            p->data=child->data;
+        }
+        if(child->lbit==0 && child->rbit==0)
+        {
+            p=child;
+            cout<<"\nparent->data"<<parent->data<<"\tchild->data:"<<child->data;
+            if(parent->llink==child)
+            {
+                parent->lbit=child->lbit;
+                parent->llink=child->llink;
+            }
+            else{
+                parent->rbit=child->rbit;
+                parent->rlink=child->rlink;
+            }
+            delete p;
+            return;
+        }
+   }
 }
 int main()
 {
     TBT t;
     t.create();
-    // cout<<"\nInorder:";
-    // t.inorder();
-    cout<<"\npreorder:";
-    t.preorder();
+    cout<<"\nInorder:";
+    t.inorder();
+    // cout<<"\npreorder:";
+    // t.preorder();
+
+
+    int x;
+    cout<<"\nEnter element to deltete:";
+    cin>>x;
+
+    t.searchTodelete(x);
+
+    cout<<"\nInorder:";
+    t.inorder();
     return 0;
 }

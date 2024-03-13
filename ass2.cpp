@@ -155,7 +155,7 @@ int Tree::longest_path_Number_of_Nodes(TreeNode* p)
 }
 int Tree::height(TreeNode* t)
 {
-    int x=0,y=0;
+    int x,y;
     if(t==NULL)
     {
    	 return 0;
@@ -232,17 +232,21 @@ void Tree::insert(int data)
     {
    	 parent=root;
    	 child=root;
-   	 while(parent->data!=data && child!=0)
+   	 while(child!=0)
    	 {
    		 parent=child;
    		 if(parent->data<data)
    		 {
    			 child=parent->rchild;
    		 }
-   		 else
+   		 else if(parent->data>data)
    		 {
    			 child=parent->lchild;
    		 }
+         else{
+            cout<<"\nDuplicate";
+            return ;
+         }
    	 }
 
    	 if(parent->data<data)
